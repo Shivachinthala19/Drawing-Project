@@ -1,0 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --bg-dots: #e5e7eb;
+    --surface: rgba(255, 255, 255, 0.85);
+    --surface-border: rgba(255, 255, 255, 0.5);
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    color: var(--text-main);
+    background-color: #f9fafb;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+#root {
+    width: 100vw;
+    height: 100vh;
+}
+
+.canvas-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: #f9fafb;
+    background-image: radial-gradient(var(--bg-dots) 1px, transparent 1px);
+    background-size: 24px 24px;
+    overflow: hidden;
+    /* Custom pencil cursor */
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>') 0 24, crosshair;
+}
+
+/* Floating Toolbar */
+.toolbar {
+    position: absolute;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 8px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--surface-border);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    z-index: 50;
+    transition: all 0.3s ease;
+}
+
+.toolbar:hover {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: #e5e7eb;
+}
+
+/* Color Picker */
+.color-picker {
+    display: flex;
+    gap: 8px;
+    padding: 0 4px;
+}
+
+.color-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.color-btn::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.color-btn.active::after {
+    border-color: var(--primary);
+}
+
+/* Tool Buttons */
+.tool-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 40px;
+    height: 40px;
+}
+
+.tool-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-main);
+}
+
+.tool-btn.active {
+    background: #e0e7ff;
+    color: var(--primary);
+}
+
+.action-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    color: var(--text-main);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.action-btn:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+}
+
+.action-btn:active {
+    transform: translateY(1px);
+}
+
+/* Slider */
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--primary);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+}
+
+/* User List */
+.users-panel {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: var(--surface);
+    backdrop-filter: blur(12px);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--surface-border);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+    min-width: 200px;
+    transition: transform 0.3s ease;
+}
+
+.users-header {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-count-badge {
+    background: #e0e7ff;
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.user-item:last-child {
+    border-bottom: none;
+}
+
+.user-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.is-me {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+/* Cursors */
+.cursor-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 40;
+    will-change: transform;
+    transition: transform 0.1s linear;
+    /* Smooth interpolation */
+}
+
+.cursor-pointer {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+.cursor-tag {
+    position: absolute;
+    left: 14px;
+    top: 14px;
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 0.9;
+}
