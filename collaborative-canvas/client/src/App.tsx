@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Canvas } from './components/Canvas';
 import { socket } from './services/socket';
-import { Pencil, Eraser, Undo, Redo, Users, Palette, Monitor, Download, Trash2 } from 'lucide-react';
+import { Pencil, Eraser, Undo, Redo, Users, Download, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface User {
