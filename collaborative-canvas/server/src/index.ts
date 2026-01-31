@@ -2,10 +2,15 @@ import express from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import cors from 'cors';
+import path from 'path';
 import { DrawingState } from './DrawingState';
 
 const app = express();
 app.use(cors());
+
+// Serve static files from the client dist folder
+const clientDistPath = path.join(__dirname, '../../client/dist');
+app.use(express.static(clientDistPath));
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -16,6 +21,14 @@ const io = new Server(server, {
 });
 
 const drawingState = new DrawingState();
+
+// Handle SPA routing: serve index.html for any unknown route
+app.get('*', (req, res, next) => {
+    // If request is for API/socket, skip
+    if (req.path.startsWith('/socket.io')) return next();
+
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
